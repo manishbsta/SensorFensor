@@ -6,17 +6,19 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.manishbista.sensorfensor.services.CreateChannel;
+import com.manishbista.sensorfensor.services.MyService;
 
 import java.nio.channels.Channel;
 
 public class NotificationActivity extends AppCompatActivity {
     NotificationManagerCompat notificationManagerCompat;
-    Button btnNotifOne, btnNotifTwo;
+    Button btnNotifOne, btnNotifTwo, btnStartService, btnStopService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +27,12 @@ public class NotificationActivity extends AppCompatActivity {
 
         btnNotifOne = findViewById(R.id.btnSendNotifFirst);
         btnNotifTwo = findViewById(R.id.btnSendNotifSecond);
+        btnStartService = findViewById(R.id.btnStartService);
+        btnStopService = findViewById(R.id.btnStopService);
 
         notificationManagerCompat = NotificationManagerCompat.from(this);
-        CreateChannel createChannel = new CreateChannel(this);
-        createChannel.createChannel();
+        CreateChannel channel = new CreateChannel(this);
+        channel.createChannel();
 
         btnNotifOne.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,9 +48,23 @@ public class NotificationActivity extends AppCompatActivity {
             }
         });
 
+        btnStartService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService();
+            }
+        });
+
+        btnStopService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService();
+            }
+        });
+
     }
 
-    private void displayNotifOne(){
+    public void displayNotifOne(){
         Notification notification = new NotificationCompat.Builder(this, CreateChannel.CHANNEL_ONE)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("Book Submission Successful")
@@ -64,5 +82,13 @@ public class NotificationActivity extends AppCompatActivity {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
         notificationManagerCompat.notify(2, notification);
+    }
+
+    private void startService(){
+        startService(new Intent(this, MyService.class));
+    }
+
+    private void stopService(){
+        stopService(new Intent(this, MyService.class));
     }
 }
